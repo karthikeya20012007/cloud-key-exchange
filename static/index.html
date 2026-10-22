@@ -1,0 +1,239 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KeyShield | Privacy-Preserving Key Exchange</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-shell">
+
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">K</div>
+                <div>
+                    <h2>KeyShield</h2>
+                    <p>SECURE CLOUD EXCHANGE</p>
+                </div>
+            </div>
+
+            <div class="nav-label">WORKSPACE</div>
+            <a class="nav-item active" href="#overview">▦ &nbsp; Overview</a>
+            <a class="nav-item" href="#exchange">⇄ &nbsp; Key Exchange</a>
+            <a class="nav-item" href="#messaging">▤ &nbsp; Encrypted Messages</a>
+            <a class="nav-item" href="#activity">◷ &nbsp; Activity Log</a>
+
+            <div class="sidebar-bottom">
+                <div class="status-dot"></div>
+                <div>
+                    <strong>Local API</strong>
+                    <p id="connection-status">Checking connection...</p>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div>
+                    <p class="eyebrow">CLOUD SECURITY / MICROPROJECT</p>
+                    <h1>Privacy-Preserving Key Exchange</h1>
+                    <p class="subtitle">
+                        Secure communication through client-side encryption.
+                    </p>
+                </div>
+                <div class="top-badge">
+                    <span class="status-dot"></span>
+                    <span>DEMO ENVIRONMENT</span>
+                </div>
+            </header>
+
+            <section class="metrics" id="overview">
+                <article class="metric-card">
+                    <div class="metric-heading">KEY EXCHANGE</div>
+                    <div class="metric-value" id="key-status">Pending</div>
+                    <p>ECDH shared-key agreement</p>
+                </article>
+
+                <article class="metric-card">
+                    <div class="metric-heading">ENCRYPTION</div>
+                    <div class="metric-value">AES-256-GCM</div>
+                    <p>Authenticated encryption</p>
+                </article>
+
+                <article class="metric-card">
+                    <div class="metric-heading">KEY DERIVATION</div>
+                    <div class="metric-value">HKDF-SHA256</div>
+                    <p>256-bit symmetric key</p>
+                </article>
+
+                <article class="metric-card">
+                    <div class="metric-heading">MESSAGES STORED</div>
+                    <div class="metric-value" id="message-count">0</div>
+                    <p>Encrypted records on server</p>
+                </article>
+            </section>
+
+            <section class="section" id="exchange">
+                <div class="section-heading">
+                    <div>
+                        <h2>Participants</h2>
+                        <p>Generate keys and register public keys with the API.</p>
+                    </div>
+                    <span class="section-tag">ECDH · P-256</span>
+                </div>
+
+                <div class="participant-grid">
+                    <article class="participant-card">
+                        <div class="participant-top">
+                            <div class="avatar alice-avatar">A</div>
+                            <div>
+                                <h3>Alice</h3>
+                                <p>Message sender</p>
+                            </div>
+                            <span class="pill" id="alice-status">Not ready</span>
+                        </div>
+
+                        <div class="key-box">
+                            <span>KEY PAIR</span>
+                            <strong id="alice-key-state">Not generated</strong>
+                        </div>
+
+                        <button class="button button-primary" id="alice-generate">
+                            Generate Alice's Keys
+                        </button>
+                        <button class="button button-secondary" id="alice-register" disabled>
+                            Register Public Key
+                        </button>
+                    </article>
+
+                    <div class="exchange-symbol">
+                        <div class="exchange-circle">⇄</div>
+                        <span>ECDH</span>
+                    </div>
+
+                    <article class="participant-card">
+                        <div class="participant-top">
+                            <div class="avatar bob-avatar">B</div>
+                            <div>
+                                <h3>Bob</h3>
+                                <p>Message recipient</p>
+                            </div>
+                            <span class="pill" id="bob-status">Not ready</span>
+                        </div>
+
+                        <div class="key-box">
+                            <span>KEY PAIR</span>
+                            <strong id="bob-key-state">Not generated</strong>
+                        </div>
+
+                        <button class="button button-primary" id="bob-generate">
+                            Generate Bob's Keys
+                        </button>
+                        <button class="button button-secondary" id="bob-register" disabled>
+                            Register Public Key
+                        </button>
+                    </article>
+                </div>
+
+                <div class="notice">
+                    <strong>Privacy principle</strong>
+                    <p>
+                        Private keys remain in the browser. Only public keys and
+                        encrypted message data should be sent to the server.
+                    </p>
+                </div>
+            </section>
+
+            <section class="section" id="messaging">
+                <div class="section-heading">
+                    <div>
+                        <h2>Secure Messaging</h2>
+                        <p>Encrypt locally, store ciphertext, then decrypt as Bob.</p>
+                    </div>
+                    <span class="section-tag">END-TO-END DEMO</span>
+                </div>
+
+                <div class="message-card">
+                    <label for="message-input">MESSAGE FROM ALICE TO BOB</label>
+                    <textarea
+                        id="message-input"
+                        rows="3"
+                        maxlength="5000"
+                        placeholder="Enter a confidential message..."
+                    ></textarea>
+
+                    <div class="button-row">
+                        <button class="button button-primary" id="send-message" disabled>
+                            Encrypt &amp; Send
+                        </button>
+                        <button class="button button-secondary" id="refresh-messages">
+                            Refresh Storage
+                        </button>
+                    </div>
+
+                    <div id="message-feedback" class="feedback" role="status">
+                        Generate and register both public keys to begin.
+                    </div>
+                </div>
+
+                <div class="result-grid">
+                    <article class="result-card">
+                        <div class="result-heading">
+                            <h3>Server-side payload</h3>
+                            <span class="pill">Ciphertext</span>
+                        </div>
+                        <pre id="ciphertext-output">No encrypted message yet.</pre>
+                    </article>
+
+                    <article class="result-card">
+                        <div class="result-heading">
+                            <h3>Bob's decrypted message</h3>
+                            <span class="pill success-pill" id="decrypt-status">Waiting</span>
+                        </div>
+                        <pre id="plaintext-output">Bob has not received a message yet.</pre>
+                    </article>
+                </div>
+            </section>
+
+            <section class="section" id="activity">
+                <div class="section-heading">
+                    <div>
+                        <h2>Cloud Message Storage</h2>
+                        <p>Records currently returned by the FastAPI server.</p>
+                    </div>
+                    <button class="button button-secondary" id="clear-display">
+                        Clear Activity Display
+                    </button>
+                </div>
+
+                <div class="storage-card">
+                    <div class="storage-header">
+                        <span>MESSAGE ID</span>
+                        <span>ROUTE</span>
+                        <span>CREATED AT</span>
+                    </div>
+                    <div id="storage-list">
+                        <div class="empty-state">No messages loaded.</div>
+                    </div>
+                </div>
+
+                <div class="activity-card">
+                    <h3>Activity Log</h3>
+                    <div id="activity-log" aria-live="polite">
+                        <p class="log-entry">Dashboard initialized.</p>
+                    </div>
+                </div>
+            </section>
+
+            <footer>
+                <span>KeyShield · Academic microproject prototype</span>
+                <span>ECDH · HKDF · AES-GCM</span>
+            </footer>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

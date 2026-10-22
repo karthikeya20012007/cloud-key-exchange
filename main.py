@@ -4,6 +4,11 @@ import uuid
 from datetime import datetime, timezone
 from typing import Literal
 
+from pathlib import Path
+
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
@@ -16,6 +21,20 @@ app = FastAPI(
     ),
     version="1.0.0",
 )
+
+BASE_DIR = Path(__file__).resolve().parent
+STATIC_DIR = BASE_DIR / "static"
+
+app.mount(
+    "/static",
+    StaticFiles(directory=STATIC_DIR),
+    name="static",
+)
+
+
+@app.get("/dashboard", include_in_schema=False)
+def dashboard():
+    return FileResponse(STATIC_DIR / "index.html")
 
 # In-memory storage for this educational prototype.
 # Data is lost when the server restarts.
