@@ -156,13 +156,35 @@
                 </div>
 
                 <div class="message-card">
-                    <label for="message-input">MESSAGE FROM ALICE TO BOB</label>
-                    <textarea
-                        id="message-input"
-                        rows="3"
-                        maxlength="5000"
-                        placeholder="Enter a confidential message..."
-                    ></textarea>
+                    
+<div class="sender-controls">
+    <div>
+        <label for="sender-select">SENDER</label>
+        <select id="sender-select">
+            <option value="alice">Alice</option>
+            <option value="bob">Bob</option>
+        </select>
+    </div>
+
+    <div>
+        <label>RECIPIENT</label>
+        <div class="recipient-display" id="recipient-display">
+            Bob
+        </div>
+    </div>
+</div>
+
+<label id="message-route-label" for="message-input">
+    MESSAGE FROM ALICE TO BOB
+</label>
+
+<textarea
+    id="message-input"
+    rows="3"
+    maxlength="5000"
+    placeholder="Enter a confidential message..."
+></textarea>
+
 
                     <div class="button-row">
                         <button class="button button-primary" id="send-message" disabled>
