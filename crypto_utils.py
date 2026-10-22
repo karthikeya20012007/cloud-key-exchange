@@ -21,8 +21,13 @@ def generate_key_pair():
     return private_key, public_key_bytes
 
 
+def public_key_to_base64(public_key_bytes: bytes) -> str:
+    """Encode a public key for transport through JSON."""
+    return base64.b64encode(public_key_bytes).decode("ascii")
+
+
 def derive_shared_key(private_key, peer_public_key_bytes):
-    """Derive an AES-256 key using ECDH and HKDF."""
+    """Derive a 256-bit AES key using ECDH and HKDF-SHA256."""
     peer_public_key = serialization.load_pem_public_key(
         peer_public_key_bytes
     )
@@ -32,7 +37,6 @@ def derive_shared_key(private_key, peer_public_key_bytes):
 
     shared_secret = private_key.exchange(ec.ECDH(), peer_public_key)
 
-    # HKDF derives a 32-byte AES key from the ECDH shared secret.
     return HKDF(
         algorithm=hashes.SHA256(),
         length=32,
@@ -41,12 +45,10 @@ def derive_shared_key(private_key, peer_public_key_bytes):
     ).derive(shared_secret)
 
 
-def encrypt_message(message, aes_key):
-    """Encrypt a UTF-8 message using AES-GCM."""
+def encrypt_message(message: str, aes_key: bytes) -> dict:
+    """Encrypt a message using AES-GCM."""
     nonce = os.urandom(12)
-    aesgcm = AESGCM(aes_key)
-
-    ciphertext = aesgcm.encrypt(
+    ciphertext = AESGCM(aes_key).encrypt(
         nonce,
         message.encode("utf-8"),
         None,
@@ -58,8 +60,8 @@ def encrypt_message(message, aes_key):
     }
 
 
-def decrypt_message(encrypted_data, aes_key):
-    """Decrypt and authenticate an AES-GCM ciphertext."""
+def decrypt_message(encrypted_data: dict, aes_key: bytes) -> str:
+    """Decrypt and authenticate an AES-GCM message."""
     nonce = base64.b64decode(
         encrypted_data["nonce"],
         validate=True,
@@ -72,7 +74,10 @@ def decrypt_message(encrypted_data, aes_key):
     if len(nonce) != 12:
         raise ValueError("Invalid AES-GCM nonce length.")
 
-    aesgcm = AESGCM(aes_key)
-    plaintext = aesgcm.decrypt(nonce, ciphertext, None)
+    plaintext = AESGCM(aes_key).decrypt(
+        nonce,
+        ciphertext,
+        None,
+    )
 
     return plaintext.decode("utf-8")
